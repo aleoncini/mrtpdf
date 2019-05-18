@@ -3,6 +3,9 @@ package it.redhat.mrtool.pdf.rest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -21,7 +24,6 @@ public class TestDBService {
     public Response testConnection() {
         String host = System.getenv("MRTDB_SERVICE");
 
-        /*
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("http://" + host + ":8080")
                 .path("rs").path("associates");
@@ -30,7 +32,6 @@ public class TestDBService {
         if (response.getStatus() != 200){
             return Response.status(200).entity("PDF Test Service. Test FAILED!").build();
         }
-        */
         return Response.status(200).entity("PDF Test Service. Test OK!").build();
     }
 
