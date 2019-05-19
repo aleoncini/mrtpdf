@@ -11,6 +11,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Month;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class Report {
@@ -23,6 +25,7 @@ public class Report {
     private String costCenter;
     private String carRegistryNUmber;
     private double carMileageRate;
+    private List<String[]> tripLogs;
 
     private int totalYearDistance;
     private int totalMonthDistance;
@@ -42,6 +45,31 @@ public class Report {
         getAssociateInfo();
         if (error){
             return;
+        }
+        logger.info("[Report] loading trips data...");
+        getAssociateTrips();
+    }
+
+    private void getAssociateTrips() {
+        tripLogs = new ArrayList<>();
+        String jsonString = new ServiceClient().invoke("/rs/trips/" + rhid + "/" + year + "/" + month);
+        if (jsonString == null){
+            error = true;
+            errorMessage = "Unable to load Trips data";
+            return;
+        }
+        Document document = Document.parse(jsonString);
+        totalYearDistance = document.getInteger("totalDistance");
+        List<Document> trips = (List<Document>) document.get("trips");
+        for (Document trip : trips) {
+            Document location = (Document) document.get("location");
+            Document date = (Document) document.get("date");
+            String[] values = new String[4];
+            values[0] = date.getString("day");
+            values[1] = location.getString("destination");
+            values[2] = trip.getString("purpose");
+            values[3] = location.getInteger("distance") + ".0";
+            tripLogs.add(values);
         }
     }
 
@@ -72,9 +100,9 @@ public class Report {
         PageFormatter formatter = null;
         try {
             formatter = new PageFormatter().init();
-            formatter.formatBanner();
-            formatter.formatHeader();
-            formatter.formatFooter();
+            //formatter.formatBanner();
+            //formatter.formatHeader();
+            //formatter.formatFooter();
             //formatter.formatHeaderInfo(associate, getPeriod(), totalMonthDistance, totalYearDistance);
             //formatter.formatTripsTable(trips);
             formatter.close();
@@ -83,7 +111,7 @@ public class Report {
         }
 
         logger.info("[Report] saving file...");
-        save(formatter.getDocument());
+        //save(formatter.getDocument());
 
         logger.info("[Report] formatting complete.");
         return this;
@@ -110,27 +138,6 @@ public class Report {
 
     public String getFileName(){
         return rhid + "_" + year + "_" + month + ".pdf";
-    }
-
-    public File getReportFile(){
-        return reportFile;
-    }
-
-    private void save(PDDocument document){
-        String errorMessage = "";
-        try {
-            String path = getFileName();
-            logger.info("[Report] saving " + path);
-            document.save(path);
-            reportFile = new File(path);
-        } catch (Throwable t) {
-            StringWriter trace = new StringWriter();
-            t.printStackTrace(new PrintWriter(trace, true));
-            logger.info(trace.toString());
-        }
-        if (errorMessage.length() > 0){
-            System.out.println(errorMessage);
-        }
     }
 
 }

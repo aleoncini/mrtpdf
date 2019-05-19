@@ -67,11 +67,14 @@ public class PageFormatter {
         //drawFooterValues(monthDistance, associate.getCar().getMileageRate());
     }
 
+    /*
     public void formatFooter() throws IOException {
         drawFooterLines();
         drawFooterLabels();
     }
+    */
 
+    /*
     private void drawFooterLabels() throws IOException {
         contentStream.setFont(PDType1Font.HELVETICA, 6);
         contentStream.setNonStrokingColor(darkBlue);
@@ -93,6 +96,7 @@ public class PageFormatter {
         contentStream.endText();
 
     }
+    */
 
     private void drawFooterValues(int distance, double rate) throws IOException {
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, 10);
@@ -116,6 +120,7 @@ public class PageFormatter {
         contentStream.endText();
     }
 
+    /*
     public void formatHeader() throws IOException {
         drawHeaderLines();
         drawHeaderLabels();
@@ -152,7 +157,9 @@ public class PageFormatter {
         contentStream.drawLine(50 + cellWidth, imageY - 115, 50 + cellWidth, imageY - 10);
         contentStream.drawLine(50 + (cellWidth*2), imageY - 115, 50 + (cellWidth*2), imageY - 10);
     }
+    */
 
+    /*
     private void drawFooterLines() throws IOException {
         contentStream.setNonStrokingColor(darkBlue);
         contentStream.setLineDashPattern(new float[]{}, 0);
@@ -172,25 +179,9 @@ public class PageFormatter {
         contentStream.lineTo(xRight, 80);
         contentStream.stroke();
     }
+    */
 
-    public void formatBanner() throws IOException, URISyntaxException {
-        //contentStream.drawImage(bannerImage, xLeft, imageY, width, imageHeight);
-
-        contentStream.beginText();
-        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
-        contentStream.setNonStrokingColor(Color.white);
-        contentStream.newLineAtOffset(65, imageY + 36);
-        contentStream.showText("Business Mileage Form");
-        contentStream.endText();
-
-        contentStream.beginText();
-        contentStream.setFont(PDType1Font.COURIER, 10);
-        contentStream.setNonStrokingColor(Color.white);
-        contentStream.newLineAtOffset(65, imageY + 16);
-        contentStream.showText("Produced by MRTool");
-        contentStream.endText();
-    }
-
+    /*
     private void writeCellLabel(PDPageContentStream contentStream, int col, int row, String header) throws IOException {
         contentStream.setFont(PDType1Font.HELVETICA, 6);
         contentStream.setNonStrokingColor(darkBlue);
@@ -205,6 +196,7 @@ public class PageFormatter {
         contentStream.showText(header);
         contentStream.endText();
     }
+    */
 
     private void writeCellValue(PDPageContentStream contentStream, int col, int row, String value) throws IOException {
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, 10);
