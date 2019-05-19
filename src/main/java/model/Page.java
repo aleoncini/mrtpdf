@@ -9,10 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -51,10 +48,8 @@ public class Page {
         document.addPage(new PDPage());
         PDPage page = document.getPage(0);
         try {
+            loadBannerImage(page);
             contentStream = new PDPageContentStream(document, page);
-            URL resource = this.getClass().getResource("RHBannerNew.png");
-            logger.info("[Page] loading banner from: " + resource.getPath());
-            bannerImage = PDImageXObject.createFromFile(resource.getPath(), document);
         } catch (Throwable t) {
             StringWriter trace = new StringWriter();
             t.printStackTrace(new PrintWriter(trace, true));
@@ -67,6 +62,20 @@ public class Page {
         float imageHeight = (contentWidth / bannerImage.getWidth()) * bannerImage.getHeight();
         topY = page.getBleedBox().getHeight() - borderWidth;
         imageY = topY - imageHeight;
+    }
+
+    private void loadBannerImage(PDPage page) throws IOException {
+        logger.info("[Page] loading image bytes...");
+        InputStream input = getClass().getResourceAsStream("RHBannerNew.png");
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[16384];
+        while ((nRead = input.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        logger.info("[Page] read " + nRead + " bytes.");
+        contentStream = new PDPageContentStream(document, page);
+        bannerImage = PDImageXObject.createFromByteArray(document, buffer.toByteArray(),null);
     }
 
     public void format(Report report){
