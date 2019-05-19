@@ -1,8 +1,10 @@
 package model;
 
+import it.redhat.mrtool.pdf.rest.ServiceClient;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.bson.Document;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -14,7 +16,14 @@ import java.util.Locale;
 public class Report {
     private static final Logger logger = LoggerFactory.getLogger("it.redhat.mrtool");
 
-    private String associateId;
+    private boolean error = false;
+    private String errorMessage;
+    private String rhid;
+    private String associateName;
+    private String costCenter;
+    private String carRegistryNUmber;
+    private double carMileageRate;
+
     private int totalYearDistance;
     private int totalMonthDistance;
     private int year;
@@ -22,13 +31,29 @@ public class Report {
     private File reportFile;
 
     public Report(String redhatId, int year, int month){
-        this.associateId = redhatId;
+        this.rhid = redhatId;
         this.year = year;
         this.month = month;
+        getData();
     }
 
-    public Report make(){
+    private void getData() {
         logger.info("[Report] loading associate data...");
+        getAssociateInfo();
+        if (error){
+            return;
+        }
+    }
+
+    public boolean isValid(){
+        return ! error;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    private Report make(){
         //associate = new AssociateHelper().get(associateId);
         //logger.info("[Report] loaded " + associate.getName());
 
@@ -64,12 +89,27 @@ public class Report {
         return this;
     }
 
+    private void getAssociateInfo() {
+        String jsonString = new ServiceClient().invoke("/rs/associates/" + rhid);
+        if (jsonString == null){
+            error = true;
+            errorMessage = "Unable to load Associate data";
+            return;
+        }
+        Document document = Document.parse(jsonString);
+        this.associateName = document.getString("name");
+        this.costCenter = document.getString("costCenter");
+        Document car = (Document) document.get("car");
+        this.carRegistryNUmber = car.getString("registryNumber");
+        this.carMileageRate = car.getDouble("mileageRate");
+    }
+
     private String getPeriod() {
         return Month.of(month).getDisplayName(TextStyle.FULL, Locale.getDefault()) + " " + year;
     }
 
     public String getFileName(){
-        return "/tmp/" + associateId + "_" + year + "_" + month + ".pdf";//new ReportDirectory().getReportsDirectoryPath().toString() + "/" + associate.getRedhatId() + "_" + year + "_" + month + ".pdf";
+        return rhid + "_" + year + "_" + month + ".pdf";
     }
 
     public File getReportFile(){

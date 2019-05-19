@@ -1,5 +1,7 @@
 package it.redhat.mrtool.pdf.rest;
 
+import model.Page;
+import model.PageFormatter;
 import model.Report;
 
 import javax.ws.rs.GET;
@@ -24,7 +26,8 @@ public class BuilderService {
     @Path("{associateId}/{year}/{month}")
     public Response scheduleBuild(@PathParam("associateId") String id, @PathParam("year") int year, @PathParam("month") int month) {
         CompletableFuture.runAsync(() -> {
-            Report report = new Report(id, year, month).make();
+            Report report = new Report(id, year, month);
+            new Page().save();
         });
         return Response.status(200).entity("{ \"result\": \"Build successfully scheduled\" }").build();
     }
