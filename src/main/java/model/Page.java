@@ -5,6 +5,8 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.File;
@@ -15,7 +17,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public class Page {
-
+    private static final Logger logger = LoggerFactory.getLogger("it.redhat.mrtool");
     private final static String REPORT_DIR = "/reports/";
 
     private PDDocument document;
@@ -29,8 +31,11 @@ public class Page {
     private float imageY, topY;
 
     public Page(){
+        logger.info("[Page] initializing page...");
         init();
+        logger.info("[Page] initialization complete. Now drawing template objects.");
         drawPageForm();
+        logger.info("[Page] Template ready.");
     }
 
     private void drawPageForm() {
@@ -48,16 +53,13 @@ public class Page {
         try {
             contentStream = new PDPageContentStream(document, page);
             URL resource = this.getClass().getResource("RHBannerNew.png");
-
-            //Path path = Paths.get(new ReportDirectory().getResourcesDirectoryPath().toString() + "RHBanner.png");
-            //String path = new ReportDirectory().getResourcesDirectoryPath().toString() + "/RHBannerNew.png";
-            //logger.info("[PageFormatter] loading banner from: " + path);
-
+            logger.info("[Page] loading banner from: " + resource.getPath());
             bannerImage = PDImageXObject.createFromFile(resource.getPath(), document);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Throwable t) {
+            StringWriter trace = new StringWriter();
+            t.printStackTrace(new PrintWriter(trace, true));
+            logger.warn(trace.toString());
         }
-
         contentWidth = page.getBleedBox().getWidth() - (borderWidth * 2);
         xLeft = borderWidth;
         xRight = xLeft + contentWidth;
@@ -72,10 +74,13 @@ public class Page {
     }
 
     public boolean save(){
+        logger.info("[Page] saving " + fileName);
         try {
             document.save(fileName);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable t) {
+            StringWriter trace = new StringWriter();
+            t.printStackTrace(new PrintWriter(trace, true));
+            logger.warn(trace.toString());
             return false;
         }
         return true;
