@@ -17,7 +17,7 @@ public class PageFormatter {
 
     private PDDocument document;
     private PDPageContentStream contentStream;
-    private PDImageXObject bannerImage;
+    //private PDImageXObject bannerImage;
 
     private Color darkBlue= new Color(0, 65, 85);
 
@@ -46,7 +46,7 @@ public class PageFormatter {
         xLeft = borderWidth;
         xRight = xLeft + width;
         xMiddle = xLeft + (width / 2);
-        imageHeight = (width / bannerImage.getWidth()) * bannerImage.getHeight();
+        imageHeight = 100;//(width / bannerImage.getWidth()) * bannerImage.getHeight();
         imageY = page.getBleedBox().getHeight() - 40 - imageHeight;
 
         logger.info("[PageFormatter] formatter inited.");
@@ -174,7 +174,7 @@ public class PageFormatter {
     }
 
     public void formatBanner() throws IOException, URISyntaxException {
-        contentStream.drawImage(bannerImage, xLeft, imageY, width, imageHeight);
+        //contentStream.drawImage(bannerImage, xLeft, imageY, width, imageHeight);
 
         contentStream.beginText();
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
