@@ -48,7 +48,7 @@ public class Page {
         document.addPage(new PDPage());
         PDPage page = document.getPage(0);
         try {
-            loadBannerImage(page);
+            bannerImage = PDImageXObject.createFromFile(REPORT_DIR + "RHBannerNew.png", document);
             contentStream = new PDPageContentStream(document, page);
         } catch (Throwable t) {
             StringWriter trace = new StringWriter();
@@ -62,20 +62,6 @@ public class Page {
         float imageHeight = (contentWidth / bannerImage.getWidth()) * bannerImage.getHeight();
         topY = page.getBleedBox().getHeight() - borderWidth;
         imageY = topY - imageHeight;
-    }
-
-    private void loadBannerImage(PDPage page) throws IOException {
-        logger.info("[Page] loading image bytes...");
-        InputStream input = getClass().getResourceAsStream("RHBannerNew.png");
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int nRead;
-        byte[] data = new byte[16384];
-        while ((nRead = input.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-        }
-        logger.info("[Page] read " + nRead + " bytes.");
-        contentStream = new PDPageContentStream(document, page);
-        bannerImage = PDImageXObject.createFromByteArray(document, buffer.toByteArray(),null);
     }
 
     public void format(Report report){
