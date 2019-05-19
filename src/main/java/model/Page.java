@@ -71,6 +71,10 @@ public class Page {
     public boolean save(){
         logger.info("[Page] saving " + fileName);
         try {
+            if (contentStream != null){
+                contentStream.close();
+                contentStream = null;
+            }
             document.save(fileName);
         } catch (Throwable t) {
             StringWriter trace = new StringWriter();
