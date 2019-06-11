@@ -54,6 +54,7 @@ public class Report {
     private void getAssociateTrips() {
         tripLogs = new ArrayList<>();
         String jsonString = new ServiceClient().invoke("/rs/trips/" + rhid + "/" + year + "/" + month);
+        logger.info("[Report] json string from DB service: " + jsonString);
         if (jsonString == null){
             error = true;
             errorMessage = "Unable to load Trips data";
@@ -61,6 +62,7 @@ public class Report {
         }
         Document document = Document.parse(jsonString);
         totalYearDistance = document.getInteger("totalDistance");
+        logger.info("[Report] total distance: " + totalYearDistance);
         List<Document> trips = (List<Document>) document.get("trips");
         for (Document trip : trips) {
             Document location = (Document) document.get("location");
@@ -71,6 +73,7 @@ public class Report {
             values[2] = trip.getString("purpose");
             values[3] = location.getInteger("distance") + ".0";
             tripLogs.add(values);
+            logger.info("[Report] single distance reported: " + values[3]);
         }
     }
 
