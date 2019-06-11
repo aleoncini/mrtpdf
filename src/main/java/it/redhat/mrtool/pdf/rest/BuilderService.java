@@ -1,7 +1,6 @@
 package it.redhat.mrtool.pdf.rest;
 
 import model.Page;
-import model.PageFormatter;
 import model.Report;
 
 import javax.ws.rs.GET;

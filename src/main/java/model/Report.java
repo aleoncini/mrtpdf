@@ -48,6 +48,7 @@ public class Report {
         }
         logger.info("[Report] loading trips data...");
         getAssociateTrips();
+        logger.info("[Report] loaded " + tripLogs.size() + " trips for this report.");
     }
 
     private void getAssociateTrips() {

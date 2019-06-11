@@ -32,8 +32,6 @@ public class Page {
         init();
         logger.info("[Page] initialization complete. Now drawing template objects.");
         drawPageForm();
-        logger.info("[Page] template complete. Now filling with data.");
-        drawReportData();
         logger.info("[Page] report ready.");
     }
 
