@@ -202,7 +202,6 @@ public class PageFormatter {
         contentStream.showText(value);
         contentStream.endText();
     }
-    */
 
     public void formatTripsTable(java.util.List trips) throws IOException {
         if ((trips == null) || (trips.size() == 0)){
@@ -336,4 +335,6 @@ public class PageFormatter {
     public PDDocument getDocument() {
         return document;
     }
+        */
+
 }

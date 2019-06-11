@@ -66,42 +66,6 @@ public class Report {
         }
     }
 
-    private Report make(){
-        //associate = new AssociateHelper().get(associateId);
-        //logger.info("[Report] loaded " + associate.getName());
-
-        //TripHelper helper = new TripHelper();
-
-        logger.info("[Report] loading trips...");
-        //trips = helper.getTrips(associateId, year, month);
-        //totalMonthDistance = helper.distance(trips);
-        //logger.info("[Report] loaded " + trips.size() + " trips");
-
-        logger.info("[Report] loading trips...");
-        //totalYearDistance = helper.getTotalYearDistance(associateId, year);
-        //logger.info("[Report] loaded " + trips.size() + " trips");
-
-        logger.info("[Report] formatting pdf report...");
-        PageFormatter formatter = null;
-        try {
-            formatter = new PageFormatter().init();
-            //formatter.formatBanner();
-            //formatter.formatHeader();
-            //formatter.formatFooter();
-            //formatter.formatHeaderInfo(associate, getPeriod(), totalMonthDistance, totalYearDistance);
-            //formatter.formatTripsTable(trips);
-            formatter.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        logger.info("[Report] saving file...");
-        //save(formatter.getDocument());
-
-        logger.info("[Report] formatting complete.");
-        return this;
-    }
-
     private void getAssociateInfo() {
         String jsonString = new ServiceClient().invoke("/rs/associates/" + rhid);
         if (jsonString == null){
@@ -146,6 +110,10 @@ public class Report {
 
     public double getCarMileageRate() {
         return carMileageRate;
+    }
+
+    public java.util.List<String[]> getTripLogs(){
+        return tripLogs;
     }
 
     public String getFileName(){
