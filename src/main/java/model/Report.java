@@ -69,7 +69,7 @@ public class Report {
             Document location = (Document) trip.get("location");
             Document date = (Document) trip.get("date");
             String[] values = new String[4];
-            values[0] = date.getString("day");
+            values[0] = Integer.toString(date.getInteger("day"));
             values[1] = location.getString("destination");
             values[2] = trip.getString("purpose");
             values[3] = location.getInteger("distance") + ".0";
