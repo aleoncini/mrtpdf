@@ -35,10 +35,6 @@ public class Page {
         logger.info("[Page] report ready.");
     }
 
-    private void drawReportData() {
-
-    }
-
     private void drawPageForm() {
         try {
             drawBanner();
@@ -72,8 +68,76 @@ public class Page {
         imageY = topY - imageHeight;
     }
 
-    public void format(Report report){
+    public Page setReport(Report report){
         fileName = REPORT_DIR + report.getFileName();
+        drawReportData(report);
+        return this;
+    }
+
+    private void drawReportData(Report report) {
+        try {
+            drawHeaderValues(report.getPeriod(),
+                    report.getMonthlyDistance(),
+                    report.getTotalYearDistance(),
+                    report.getAssociateName(),
+                    report.getCostCenter(),
+                    report.getRhid(),
+                    report.getCarRegistryNumber(),
+                    report.getCarMileageRate());
+            drawFooterValues(report.getMonthlyDistance(), report.getCarMileageRate());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void drawHeaderValues(String period, int monthDistance, int yearDistance, String name, String ccenter, String rhid, String rnumber, double rate) throws IOException {
+        writeCellValue(0, 0, name);
+        writeCellValue(0, 1, ccenter);
+        writeCellValue(0, 2, rhid);
+        writeCellValue(1, 0, period);
+        writeCellValue(1, 1, rnumber);
+        writeCellValue(1, 2, "" + Double.toString(rate));
+        int prevDistance = yearDistance - monthDistance;
+        writeCellValue(2, 0, "" + monthDistance);
+        writeCellValue(2, 1, "" + prevDistance);
+        writeCellValue(2, 2, "" + yearDistance);
+    }
+
+    private void writeCellValue(int col, int row, String value) throws IOException {
+        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 10);
+        contentStream.setNonStrokingColor(darkBlue);
+
+        float text_width = (PDType1Font.HELVETICA_BOLD.getStringWidth(value) / 1000.0f) * 10;
+        float cellWidth = contentWidth / 3;
+        float x = xLeft + (cellWidth * col) + (cellWidth / 2) - (text_width / 2);
+        float y = imageY - (40 * row) - 30;
+
+        contentStream.beginText();
+        contentStream.newLineAtOffset(x, y);
+        contentStream.showText(value);
+        contentStream.endText();
+    }
+
+    private void drawFooterValues(int distance, double rate) throws IOException {
+        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 10);
+        contentStream.setNonStrokingColor(darkBlue);
+
+        String text = distance + ".0";
+        float text_width = (PDType1Font.HELVETICA.getStringWidth(text) / 1000.0f) * 10;
+
+        contentStream.beginText();
+        contentStream.newLineAtOffset(xRight - 10 - text_width, 87);
+        contentStream.showText(text);
+        contentStream.endText();
+
+        double cost = distance * rate;
+        text = "" + cost;
+        text_width = (PDType1Font.HELVETICA.getStringWidth(text) / 1000.0f) * 10;
+
+        contentStream.beginText();
+        contentStream.newLineAtOffset(xRight - 10 - text_width, 67);
+        contentStream.showText(text);
+        contentStream.endText();
     }
 
     public boolean save(){

@@ -1,14 +1,10 @@
 package model;
 
 import it.redhat.mrtool.pdf.rest.ServiceClient;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.bson.Document;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
@@ -18,12 +14,10 @@ import java.util.Locale;
 public class Report {
     private static final Logger logger = LoggerFactory.getLogger("it.redhat.mrtool");
 
-    private boolean error = false;
-    private String errorMessage;
     private String rhid;
     private String associateName;
     private String costCenter;
-    private String carRegistryNUmber;
+    private String carRegistryNumber;
     private double carMileageRate;
     private List<String[]> tripLogs;
 
@@ -31,7 +25,6 @@ public class Report {
     private int totalMonthDistance;
     private int year;
     private int month;
-    private File reportFile;
 
     public Report(String redhatId, int year, int month){
         this.rhid = redhatId;
@@ -43,28 +36,22 @@ public class Report {
     private void getData() {
         logger.info("[Report] loading associate data...");
         getAssociateInfo();
-        if (error){
-            return;
-        }
         logger.info("[Report] loading trips data...");
-        getAssociateTrips();
+        getMonthlyTrips();
         logger.info("[Report] loaded " + tripLogs.size() + " trips for this report.");
     }
 
-    private void getAssociateTrips() {
+    private void getMonthlyTrips() {
         tripLogs = new ArrayList<>();
         String jsonString = new ServiceClient().invoke("/rs/trips/" + rhid + "/" + year + "/" + month);
-        //logger.info("[Report] json string from DB service: " + jsonString);
         if (jsonString == null){
-            error = true;
-            errorMessage = "Unable to load Trips data";
+            logger.error("[Report] Unable to load associate trips of the month!");
             return;
         }
         Document document = Document.parse(jsonString);
         totalYearDistance = document.getInteger("totalDistance");
-        logger.info("[Report] total distance: " + totalYearDistance);
         List<Document> trips = (List<Document>) document.get("trips");
-        logger.info("[Report] number of trip documents: " + trips.size());
+        totalMonthDistance = 0;
         for (Document trip : trips) {
             Document location = (Document) trip.get("location");
             Document date = (Document) trip.get("date");
@@ -72,18 +59,11 @@ public class Report {
             values[0] = Integer.toString(date.getInteger("day"));
             values[1] = location.getString("destination");
             values[2] = trip.getString("purpose");
-            values[3] = location.getInteger("distance") + ".0";
+            int dist = location.getInteger("distance");
+            totalMonthDistance += dist;
+            values[3] = dist + ".0";
             tripLogs.add(values);
-            logger.info("[Report] single distance reported: " + values[3]);
         }
-    }
-
-    public boolean isValid(){
-        return ! error;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     private Report make(){
@@ -125,20 +105,47 @@ public class Report {
     private void getAssociateInfo() {
         String jsonString = new ServiceClient().invoke("/rs/associates/" + rhid);
         if (jsonString == null){
-            error = true;
-            errorMessage = "Unable to load Associate data";
+            logger.error("[Report] Unable to load associate info!");
             return;
         }
         Document document = Document.parse(jsonString);
         this.associateName = document.getString("name");
         this.costCenter = document.getString("costCenter");
         Document car = (Document) document.get("car");
-        this.carRegistryNUmber = car.getString("registryNumber");
+        this.carRegistryNumber = car.getString("registryNumber");
         this.carMileageRate = car.getDouble("mileageRate");
     }
 
-    private String getPeriod() {
+    public String getPeriod() {
         return Month.of(month).getDisplayName(TextStyle.FULL, Locale.getDefault()) + " " + year;
+    }
+
+    public int getMonthlyDistance() {
+        return totalMonthDistance;
+    }
+
+    public int getTotalYearDistance() {
+        return totalYearDistance;
+    }
+
+    public String getAssociateName() {
+        return associateName;
+    }
+
+    public String getCostCenter() {
+        return costCenter;
+    }
+
+    public String getRhid() {
+        return rhid;
+    }
+
+    public String getCarRegistryNumber() {
+        return carRegistryNumber;
+    }
+
+    public double getCarMileageRate() {
+        return carMileageRate;
     }
 
     public String getFileName(){

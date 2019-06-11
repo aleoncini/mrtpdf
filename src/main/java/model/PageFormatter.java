@@ -54,17 +54,6 @@ public class PageFormatter {
     }
 
     public void formatHeaderInfo(String period, int monthDistance, int yearDistance) throws IOException {
-        //writeCellValue(contentStream, 0, 0, associate.getName());
-        //writeCellValue(contentStream, 0, 1, associate.getCostCenter());
-        //writeCellValue(contentStream, 0, 2, associate.getRedhatId());
-        writeCellValue(contentStream, 1, 0, period);
-        //writeCellValue(contentStream, 1, 1, associate.getCar().getRegistryNumber());
-        //writeCellValue(contentStream, 1, 2, "" + associate.getCar().getMileageRate());
-        int prevDistance = yearDistance - monthDistance;
-        writeCellValue(contentStream, 2, 0, "" + monthDistance);
-        writeCellValue(contentStream, 2, 1, "" + prevDistance);
-        writeCellValue(contentStream, 2, 2, "" + yearDistance);
-        //drawFooterValues(monthDistance, associate.getCar().getMileageRate());
     }
 
     /*
@@ -98,6 +87,7 @@ public class PageFormatter {
     }
     */
 
+    /*
     private void drawFooterValues(int distance, double rate) throws IOException {
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, 10);
         contentStream.setNonStrokingColor(darkBlue);
@@ -119,6 +109,7 @@ public class PageFormatter {
         contentStream.showText(text);
         contentStream.endText();
     }
+    */
 
     /*
     public void formatHeader() throws IOException {
@@ -196,7 +187,6 @@ public class PageFormatter {
         contentStream.showText(header);
         contentStream.endText();
     }
-    */
 
     private void writeCellValue(PDPageContentStream contentStream, int col, int row, String value) throws IOException {
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, 10);
@@ -212,6 +202,7 @@ public class PageFormatter {
         contentStream.showText(value);
         contentStream.endText();
     }
+    */
 
     public void formatTripsTable(java.util.List trips) throws IOException {
         if ((trips == null) || (trips.size() == 0)){

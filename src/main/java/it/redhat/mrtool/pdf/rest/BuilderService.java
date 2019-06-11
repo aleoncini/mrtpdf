@@ -25,8 +25,7 @@ public class BuilderService {
     @Path("{associateId}/{year}/{month}")
     public Response scheduleBuild(@PathParam("associateId") String id, @PathParam("year") int year, @PathParam("month") int month) {
         CompletableFuture.runAsync(() -> {
-            Report report = new Report(id, year, month);
-            new Page().save();
+            new Page().setReport(new Report(id, year, month)).save();
         });
         return Response.status(200).entity("{ \"result\": \"Build successfully scheduled\" }").build();
     }
